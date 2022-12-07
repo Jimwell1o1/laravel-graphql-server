@@ -1,0 +1,54 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+
+    lights: [Light] @all
+    light(id: ID @eq): Light @find
+    lightsByCategory(category_id: ID! @where(operator: "like")): Light @find
+
+    categories: [Category] @all
+    category(category_name: String @eq): Category @find
+    lightCategories(category_name: String! @where(operator: "like")): [Category!]! @all
+
+    contacts: [Contact] @all
+}
+
+type Mutation {
+    createContact(
+         name: String @rules (apply : ["required"])
+         email: String @rules(apply: ["required", "email"])
+         contact: String @rules (apply : ["required", "numeric"])
+         address: String @rules (apply : ["required"])
+         message: String @rules (apply : ["required"])
+     ): Contact @create
+ }
+
+type Light {
+    id: ID!
+    product_name: String!
+    category_id: String!
+    file_path: String!
+    price: String!
+    category: Category! @belongsTo
+}
+
+type Category {
+    id: ID!
+    title: String!
+    category_name: String!
+    img_path: String!
+    light: [Light] @hasMany
+}
+
+type Contact {
+    id: ID!
+    name: String!
+    email: String!
+    contact: String!
+    address: String!
+    message: String!
+    created_at: DateTime
+    updated_at: DateTime
+}
